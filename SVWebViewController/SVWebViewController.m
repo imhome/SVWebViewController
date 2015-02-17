@@ -9,8 +9,10 @@
 #import "SVWebViewControllerActivityChrome.h"
 #import "SVWebViewControllerActivitySafari.h"
 #import "SVWebViewController.h"
+#import "NJKWebViewProgressView.h"
+#import "NJKWebViewProgress.h"
 
-@interface SVWebViewController () <UIWebViewDelegate>
+@interface SVWebViewController () <UIWebViewDelegate, NJKWebViewProgressDelegate>
 
 @property (nonatomic, strong) UIBarButtonItem *backBarButtonItem;
 @property (nonatomic, strong) UIBarButtonItem *forwardBarButtonItem;
@@ -20,6 +22,9 @@
 
 @property (nonatomic, strong) UIWebView *webView;
 @property (nonatomic, strong) NSURLRequest *request;
+
+@property (nonatomic, strong) NJKWebViewProgressView *progressView;
+@property (nonatomic, strong) NJKWebViewProgress *progressProxy;
 
 @end
 
@@ -65,6 +70,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self updateToolbarItems];
+    [self prepareProgress];
 }
 
 - (void)viewDidUnload {
@@ -81,6 +87,7 @@
     NSAssert(self.navigationController, @"SVWebViewController needs to be contained in a UINavigationController. If you are presenting SVWebViewController modally, use SVModalWebViewController instead.");
 
     [super viewWillAppear:animated];
+    [self.navigationController.navigationBar addSubview:self.progressView];
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if (!self.navigationController.toolbarHidden) {
@@ -94,6 +101,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    [self.progressView removeFromSuperview];
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [self.navigationController setToolbarHidden:YES animated:animated];
@@ -164,6 +172,20 @@
         _actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionButtonTapped:)];
     }
     return _actionBarButtonItem;
+}
+
+#pragma mark - Progress
+
+- (void)prepareProgress {
+    self.progressProxy = [[NJKWebViewProgress alloc] init];
+    self.webView.delegate = self.progressProxy;
+    self.progressProxy.webViewProxyDelegate = self;
+    self.progressProxy.progressDelegate = self;
+
+    CGFloat progressBarHeight = 2.5f;
+    CGRect navigationBarBounds = self.navigationController.navigationBar.bounds;
+    CGRect barFrame = CGRectMake(0, navigationBarBounds.size.height - progressBarHeight, navigationBarBounds.size.width, progressBarHeight);
+    self.progressView = [[NJKWebViewProgressView alloc] initWithFrame:barFrame];
 }
 
 #pragma mark - Toolbar
@@ -267,6 +289,12 @@
     }
 
     return YES;
+}
+
+#pragma mark - NJKWebViewProgressDelegate
+
+- (void)webViewProgress:(NJKWebViewProgress *)webViewProgress updateProgress:(float)progress {
+    [self.progressView setProgress:progress animated:YES];
 }
 
 #pragma mark - Target actions
