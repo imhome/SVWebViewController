@@ -14,8 +14,8 @@
 - (instancetype)initWithURL:(NSURL *)URL;
 - (instancetype)initWithURLRequest:(NSURLRequest *)request;
 
-@property (nonatomic, strong) UIColor *barsTintColor;
 @property (nonatomic, assign) BOOL titleAlignLeft;
+@property (nonatomic, strong) UIColor *barsTintColor;
 @property (nonatomic, weak) id<UIWebViewDelegate> webViewDelegate;
 
 @end
