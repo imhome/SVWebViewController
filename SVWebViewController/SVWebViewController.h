@@ -12,6 +12,7 @@
 - (instancetype)initWithURL:(NSURL*)URL;
 - (instancetype)initWithURLRequest:(NSURLRequest *)request;
 
+@property (nonatomic, assign) BOOL titleAlignLeft;
 @property (nonatomic, weak) id<UIWebViewDelegate> delegate;
 
 @end
