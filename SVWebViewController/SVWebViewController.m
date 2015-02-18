@@ -184,7 +184,7 @@
 
     CGFloat progressBarHeight = 2.5f;
     CGRect navigationBarBounds = self.navigationController.navigationBar.bounds;
-    CGRect barFrame = CGRectMake(0, navigationBarBounds.size.height - progressBarHeight, navigationBarBounds.size.width, progressBarHeight);
+    CGRect barFrame = CGRectMake(0, navigationBarBounds.size.height, navigationBarBounds.size.width, progressBarHeight);
     self.progressView = [[NJKWebViewProgressView alloc] initWithFrame:barFrame];
 }
 
